@@ -1,5 +1,6 @@
 local str = require("str")
 local str_split = str.split
+local _M = {}
 --[[
 @ get ip v4 decimal value 
 ]]
@@ -35,9 +36,9 @@ end
 --[[
 @ get ip ranges from cidr
 ]]
-local function getIpRangesFromCidr(ip_cidr)
+function _M.cidr2ranges(cidrs)
   local ip_ranges = {}
-  for _, cidr in ipairs(ip_cidr) do
+  for _, cidr in ipairs(cidrs) do
     local ip_segs = str_split(cidr, ".")
     if #ip_segs == 4 then
       local ip_seg_4 = ip_segs[4]
@@ -69,3 +70,25 @@ local function getIpRangesFromCidr(ip_cidr)
   end
   return ip_ranges
 end
+
+--[[
+@ check if ip is in cidr 
+]]
+function _M.is_ip_match(ip_v4, cidrs)
+  local ip_segs = str_split(ip_v4, ",")
+  if #ip_segs == 4 then
+    local ip_num = get_ip_num(ip_segs)
+    if ip_num ~= nil then
+      local ip_ranges = _M.cidr2ranges(cidrs)
+      for _, range in ipairs(ip_ranges) do
+        local min_ip, max_ip = range[1], range[2]
+        if ip_num >= min_ip and ip_num <= max_ip then
+          return true
+        end
+      end
+    end
+  end
+  return false
+end
+
+return _M
