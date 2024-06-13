@@ -32,4 +32,38 @@ function _M.split(str, sep)
   return result
 end
 
+local function is_ws(ch)
+  return ch == 10 or ch == 13
+end
+
+function _M.trim(str)
+  local i = 1
+  local j = #str
+  local total = j
+  -- remove start spaces 
+  while i <= j do
+    local ch = str:byte(i, i)
+    if is_ws(ch) then
+      i = i + 1
+    else
+      break
+    end
+  end
+  -- remove end spaces
+  while i < j do
+    local ch = str:byte(j, j)
+    if is_ws(ch) then
+      j = j - 1
+    else
+      break
+    end
+  end
+  -- check if has spaces
+  if i ~= 1 or j ~= total then
+    return str:sub(i, j)
+  end
+  -- nospaces
+  return str
+end
+
 return _M
